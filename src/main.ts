@@ -162,7 +162,7 @@ class Explosion extends Graphics {
   app.stage.addEventListener('pointerdown', onClick);
 
   // Listen for animate update
-  app.ticker.add((time) => {
+  app.ticker.add(() => {
     // * Delta is 1 if running at 100% performance *
     // * Creates frame-independent transformation *
     // console.log('Time:', time);
