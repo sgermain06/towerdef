@@ -4,6 +4,9 @@ This is work in progress. Expect a lot of things to change.
 ## Requirements
 - NodeJS v22+
 
+### Libraries used
+- PixiJS - https://pixijs.com/8.x/guides
+
 ##### Linux/MacOS
 https://github.com/nvm-sh/nvm
 ```
