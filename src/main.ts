@@ -60,20 +60,18 @@ class Particle extends Graphics {
   }
 
   animate(step: number, duration: number) {
-    const x = this.position.x + (Math.cos(this._angle) * step) * (this._velocity / 50);
-    const y = this.position.y + (Math.sin(this._angle) * step) * (this._velocity / 50);
+    const x = (Math.cos(this._angle) * step) * this._velocity;
+    const y = (Math.sin(this._angle) * step) * this._velocity;
     this.position.set(x, y);
     this.alpha = 1 - step / duration;
   }
 }
 
-class Explosion extends Graphics {
+class Explosion extends Container {
 
   private _count: number = 0;
   private _duration: number;
   private _nbParticles: number;
-
-  private _stage?: Container;
 
   private _particlesArray: Particle[] = [];
 
@@ -88,7 +86,7 @@ class Explosion extends Graphics {
     for (let i = 0; i < this._nbParticles; i++) {
       // Randomize angle
       const angle = Math.random() * Math.PI* 2;
-      const velocity = Math.random() * 2 + 2;
+      const velocity = Math.random() * 0.5 + 0.5;
       const particle = new Particle({
         id: i,
         radius: 5,
@@ -98,16 +96,12 @@ class Explosion extends Graphics {
         strokeColor: 0x9999FF,
       });
       this._particlesArray.push(particle);
-      this._stage?.addChild(particle);
+      this.addChild(particle);
     }
   }
 
   get particles() {
     return this._particlesArray;
-  }
-
-  set stage(container: Container) {
-    this._stage = container;
   }
 
   get shouldRemove() {
@@ -120,12 +114,6 @@ class Explosion extends Graphics {
       particle.animate(this._count, this._duration);
     }
   }
-
-  destroy() {
-    for (const particle of this._particlesArray) {
-      this._stage?.removeChild(particle);
-    }
-  }
 }
 
 (async () => {
@@ -136,7 +124,6 @@ class Explosion extends Graphics {
 
   const onClick = (event: any) => {
     const explosion = new Explosion({ duration: 100, nbParticles: 20, position: event.global });
-    explosion.stage = app.stage;
 
     explosions.push(explosion);
     app.stage.addChild(explosion);
@@ -171,7 +158,6 @@ class Explosion extends Graphics {
       explosion.increment();
       if (explosion.shouldRemove) {
         explosions.splice(explosions.indexOf(explosion), 1);
-        explosion.destroy();
         app.stage.removeChild(explosion);
       }
     }
