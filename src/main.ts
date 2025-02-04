@@ -85,14 +85,13 @@ class Explosion extends Container {
 
     for (let i = 0; i < this._nbParticles; i++) {
       // Randomize angle
-      const angle = Math.random() * Math.PI* 2;
-      const velocity = Math.random() * 0.5 + 0.5;
+      const angle = Math.random() * (Math.PI * 2);
+      const velocity = Math.random() * 0.4 + 0.4;
       const particle = new Particle({
         id: i,
-        radius: 5,
+        radius: 2,
         angle,
         velocity,
-        position: this.position,
         strokeColor: 0x9999FF,
       });
       this._particlesArray.push(particle);
@@ -123,7 +122,7 @@ class Explosion extends Container {
   const explosions: Explosion[] = [];
 
   const onClick = (event: any) => {
-    const explosion = new Explosion({ duration: 100, nbParticles: 20, position: event.global });
+    const explosion = new Explosion({ duration: 50, nbParticles: 10, position: event.global });
 
     explosions.push(explosion);
     app.stage.addChild(explosion);
