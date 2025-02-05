@@ -9,8 +9,13 @@
     "dev": "vite"
   },
   "dependencies": {
+    "babel-preset-solid": "^1.9.3",
     "pixi-filters": "^6.1.0",
-    "pixi.js": "^8.6.2"
+    "pixi.js": "^8.6.2",
+    "solid-js": "^1.9.4",
+    "solid-zustand": "^1.8.1",
+    "vite-plugin-solid": "^2.11.1",
+    "zukeeper": "^1.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
