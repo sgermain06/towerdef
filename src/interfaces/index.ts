@@ -5,7 +5,7 @@ export interface ParticleOptions extends GraphicsOptions {
   radius: number;
   angle: number;
   velocity: number;
-  id: number;
+  duration: number;
   strokeColor?: number;
   strokeWidth?: number;
 }

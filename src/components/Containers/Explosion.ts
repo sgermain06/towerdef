@@ -10,6 +10,8 @@ class Explosion extends Container {
   private _duration: number;
   private _nbParticles: number;
 
+  private _maxExtraDuration: number = 5;
+
   private _particlesArray: Particle[] = [];
 
   constructor(options?: ExplosionOptions) {
@@ -25,10 +27,10 @@ class Explosion extends Container {
       const angle = Math.random() * (Math.PI * 2);
       const velocity = Math.random() * 0.4 + 0.4;
       const particle = new Particle({
-        id: i,
         radius: 2,
         angle,
         velocity,
+        duration: this._duration + (Math.floor(Math.random() * (this._maxExtraDuration * 2 + 1)) - this._maxExtraDuration),
         strokeColor: 0x9999FF,
       });
       this._particlesArray.push(particle);
@@ -41,13 +43,18 @@ class Explosion extends Container {
   }
 
   get shouldRemove() {
-    return this._count >= this._duration;
+    return this._particlesArray.length == 0;
   }
 
   increment() {
     this._count++;
     for (const particle of this._particlesArray) {
-      particle.animate(this._count, this._duration);
+      if (particle.shouldRemove(this._count)) {
+        this._particlesArray = this._particlesArray.filter(p => p != particle);
+      }
+      else {
+        particle.animate(this._count);
+      }
     }
   }
 }

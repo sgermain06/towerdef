@@ -12,7 +12,7 @@ const App = async () => {
                 {pixiCanvas}
             </div>
             <div class={styles.gameContainer}>
-                <h1>Game</h1>
+                <h1>Tower Defense!</h1>
             </div>
         </>
     );
