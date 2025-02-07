@@ -8,6 +8,7 @@ This is work in progress. Expect a lot of things to change.
 - PixiJS - https://pixijs.com/8.x/guides
 - SolidJS - https://docs.solidjs.com/
 - SUID (Material UI) - https://suid.io/
+- Zustand - https://zustand.docs.pmnd.rs/getting-started/introduction
 
 ##### Linux/MacOS
 https://github.com/nvm-sh/nvm
