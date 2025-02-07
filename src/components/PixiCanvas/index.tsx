@@ -1,66 +1,97 @@
-import { Application, Graphics } from "pixi.js";
+import { type Component, onMount, onCleanup } from "solid-js";
+import { Application, useApplication } from "solid-pixi";
 import { GlowFilter } from "pixi-filters";
-import { createWithSignal } from "solid-zustand";
 
 import Hexagon from "../Shapes/Hexagon";
 import Explosion from '../Containers/Explosion';
 
-interface GameState {
-    explosions: Explosion[],
-    addExplosion: (explosion: Explosion) => void,
-    removeExplosion: (explosion: Explosion) => void,
-}
+let spawnRate = 2.5;
+let waveLength = 20;
+let waveProgress = 0;
+let waveNumber = 1;
 
-const useStore = createWithSignal<GameState>((set) => ({
-    explosions: [],
-    addExplosion: (explosion: Explosion) => set((state) => ({ explosions: [...state.explosions, explosion] })),
-    removeExplosion: (explosion: Explosion) => set((state) => ({ explosions: state.explosions.filter((exp) => exp !== explosion) })),
-}));
+const TowerDef: Component<{ useStore: any }> = (props) => {
 
-const PixiCanvas = async () => {
-    
+    const { useStore } = props;
+
     const gameState = useStore();
-    
-    const app = new Application();
-    await app.init({ background: "#1E2426", resizeTo: window });
-    
-    const graph = new Graphics();
-    
-    graph.poly(Hexagon(app.screen.width / 2, app.screen.height / 2, 100));
-    graph.stroke({width: 2, color: 0xffffff });
-    graph.filters = [new GlowFilter({ innerStrength: 0.5, outerStrength: 0.5, distance: 10, color: '#FF0000' })];
-    app.stage.addChild(graph);
-    
+
+    const app = useApplication();
+
+    app!.stage.eventMode = 'static';
+    app!.stage.hitArea = app!.screen;
+
+    const hexagonFilters = [new GlowFilter({ innerStrength: 0.5, outerStrength: 0.5, distance: 10, color: '#FF0000' })];
+
     const onClick = (event: any) => {
         const explosion = new Explosion({ duration: 50, nbParticles: 10, position: event.global });
         
         gameState().addExplosion(explosion);
-        app.stage.addChild(explosion);
+        app?.stage.addChild(explosion);
         explosion.init();
+        console.log(gameState().explosions);
     }
     
-    app.stage.eventMode = 'static';
-    app.stage.hitArea = app.screen;
+    app?.stage.addEventListener('pointerdown', onClick);
     
-    app.stage.addEventListener('pointerdown', onClick);
-    
-    app.ticker.add(() => {
-        // * Delta is 1 if running at 100% performance *
-        // * Creates frame-independent transformation *
-        // console.log('Time:', time);
-        // console.log('Explosions:', explosions.length);
+    let elapsed = 0.0;
+    let lastSec = 0;
+
+    gameState().setWave(waveNumber, waveLength);
+
+    const ticker = (time: any) => {
         for (const explosion of gameState().explosions) {
             explosion.increment();
             if (explosion.shouldRemove) {
                 gameState().removeExplosion(explosion);
-                app.stage.removeChild(explosion);
+                app?.stage.removeChild(explosion);
+                console.log(gameState().explosions);
             }
         }
+
+        elapsed += (time.deltaTime / 60.0) * 100;
+        if (lastSec < (Math.floor(elapsed) / 100)) {
+            if ((Math.floor(elapsed) / 100) % spawnRate === 0) {
+                console.log('Should spawn an enemy!');
+            }
+
+            if ((Math.floor(elapsed) / 100) % 1 === 0) {
+                waveProgress++;
+                gameState().setWaveProgress(waveProgress);
+                if (gameState().waveProgress >= waveLength) {
+                    waveProgress = 0;
+                    waveNumber++;
+                    gameState().setWave(waveNumber, waveLength);
+                }
+            }
+
+            lastSec = Math.floor(elapsed) / 100;
+        }
+    };
+
+    onMount(() => {
+        console.log('Adding ticker!');
+        app!.ticker.add(ticker);
     });
-    
+
+    onCleanup(() => {
+        console.log('Removing ticker!');
+        app!.ticker.remove(ticker);
+    });
+
+    return <>
+        <Hexagon centered size={100} stroke={{width: 2, color: 0xffffff }} filters={hexagonFilters} />
+    </>
+};
+
+const PixiCanvas: Component<{ useStore: any }> = (props) => {
+    const { useStore } = props;
+
     return (
         <>
-            {app.canvas}
+            <Application background={'#1E2426'} resizeTo={window}>
+                <TowerDef useStore={useStore} />
+            </Application>
         </>
     )
 };
