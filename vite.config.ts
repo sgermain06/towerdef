@@ -6,7 +6,7 @@ import suidPlugin from '@suid/vite-plugin';
 export default defineConfig({
   plugins: [suidPlugin(), solidPlugin()],
   server: {
-    port: 8080,
+    port: 5173,
     open: true,
   },
   build: {
